@@ -12,7 +12,7 @@
   with_items:
     - "{{ item.SAMPLE_COMPARTMENT_OCID }}"
     - "{{ item.SAMPLE_IMAGE_OCID }}"
-    - "{{ item.AMPLE_AD_NAME }}"
+    - "{{ item.SAMPLE_AD_NAME }}"
 - block:
   - name: Create a temporary directory to house a temporary SSH keypair we will later use to connect to instance
     tempfile:
