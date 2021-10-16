@@ -49,10 +49,10 @@
         port: 22
         host: '{{ instance_public_ip }}'
         state: started
-         delay: 10
-         timeout: 600
-       vars:
-         ansible_connection: local
+        delay: 10
+        timeout: 600
+      vars:
+        ansible_connection: local
 
     - set_fact:
         # Use "opc" user as this is an OL image
