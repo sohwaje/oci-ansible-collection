@@ -1,7 +1,13 @@
 ---
+# Copyright (c) 2020, 2021 Oracle and/or its affiliates.
+# This software is made available to you under the terms of the GPL 3.0 license or the Apache 2.0 license.
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# Apache License v2.0
+# See LICENSE.TXT for details.
+
 - name: Check pre-requisites
   fail:
-    msg: " {{item}} 환경 변수가 설정되지 않음. 샘플이 작동하기에 적절한 값을 가진 환경 변수를 선언하라."
+    msg: "Environment variable {{item}} not set. Please declare an environment variable with an appropriate value for the sample to work."
   when: item not in ansible_env
   with_items:
     - "SAMPLE_COMPARTMENT_OCID"
@@ -62,12 +68,14 @@
 - set_fact:
     rt_id: "{{ result.route_table.id }}"
 
-# 공용 인스턴스에 대한 액세스를 허용하는 보안 목록 만들기
-# 수신 및 송신 보안 규칙의 jinja2 템플릿을 사용하여 최종 규칙의 템플릿 버전을 생성합니다.
-- name: ceate ingress rules yaml body
+# Create a security list for allowing access to public instance
+# Use a jinja2 template of the ingress and egress security rules to generate
+# a templated version of the final rules.
+- name: create ingress rules yaml body
   template: src=./templates/ingress_security_rules.yaml.j2 dest=/tmp/instance_ingress_security_rules.yaml
 - name: create egress yaml body
   template: src=./templates/egress_security_rules.yaml.j2 dest=/tmp/instance_egress_security_rules.yaml
+# Load the variables defined in the generated files
 - name: load the variables defined in the ingress rules yaml body
   include_vars:
     file: /tmp/instance_ingress_security_rules.yaml
