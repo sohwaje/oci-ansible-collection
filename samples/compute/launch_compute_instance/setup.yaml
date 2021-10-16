@@ -1,4 +1,6 @@
-- hosts: localhost
+- hosts: all
+  collections:
+    - oracle.oci
   tasks:
   - block:
     - import_tasks: setup.yaml
