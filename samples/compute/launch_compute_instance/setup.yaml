@@ -1,6 +1,6 @@
 - hosts: localhost
   tasks:
-    - block:
+    # - block:
       # - import_tasks: setup.yaml
 
       # - set_fact:
