@@ -1,9 +1,9 @@
-- hosts: all
+- hosts: localhost
   collections:
     - oracle.oci
   tasks:
-  - block:
-    - import_tasks: setup.yaml
+    - block:
+      - import_tasks: setup.yaml
 
     # - set_fact:
     #     SSH_AUTHORIZED_KEYS: "{{ lookup('env', 'SAMPLE_PUBLIC_SSH_KEY') if 'SAMPLE_PUBLIC_SSH_KEY' in ansible_env else lookup('file',  my_test_public_key ) }}"
