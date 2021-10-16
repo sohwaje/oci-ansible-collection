@@ -9,28 +9,28 @@
     - "SAMPLE_AD_NAME"
 
 - block:
-  - name: 인스턴스에 연결하는 데 사용할 임시 SSH 키 쌍을 저장할 임시 디렉터리 만들기
+  - name: Create a temporary directory to house a temporary SSH keypair we will later use to connect to instance
     tempfile:
       state: directory
       suffix: cert
     register: result
   - set_fact:
       temp_certificates_path: "{{ result.path }}"
-  - name: 프라이빗 키 생성
+  - name: Generate a Private Key
     openssl_privatekey:
       path: "{{ temp_certificates_path }}/private_key.pem"
       type: RSA
       size: 2048
   - set_fact:
       my_test_public_key: "{{ temp_certificates_path }}/public_key.pem"
-  - name: 퍼블릭키 생성
+  - name: Generate a Public Key
     openssl_publickey:
       path: "{{ my_test_public_key }}"
       privatekey_path: "{{ temp_certificates_path }}/private_key.pem"
       format: OpenSSH
   when: "'SAMPLE_PUBLIC_SSH_KEY' not in ansible_env"
 
-- name: VCN 생성
+- name: Create a VCN
   oci_network_vcn:
     compartment_id: "{{ instance_compartment }}"
     display_name: "{{ vcn_name }}"
@@ -40,7 +40,7 @@
 - set_fact:
     vcn_id: "{{ result.vcn.id }}"
 
-- name: 인터넷 게이트웨이 생성
+- name: Create a new Internet Gateway
   oci_network_internet_gateway:
     compartment_id: "{{ instance_compartment }}"
     vcn_id: "{{ vcn_id }}"
@@ -51,7 +51,7 @@
 - set_fact:
     ig_id: "{{ result.internet_gateway.id }}"
 
-- name: VCN에서 인터넷 게이트웨이로 연결할 라우팅 테이블 생성
+- name: Create route table to connect internet gateway to the VCN
   oci_network_route_table:
     compartment_id: "{{ instance_compartment }}"
     vcn_id: "{{ vcn_id }}"
@@ -64,25 +64,25 @@
 
 # 공용 인스턴스에 대한 액세스를 허용하는 보안 목록 만들기
 # 수신 및 송신 보안 규칙의 jinja2 템플릿을 사용하여 최종 규칙의 템플릿 버전을 생성합니다.
-- name: 수신 규칙 yml을 작성한다.
+- name: ceate ingress rules yaml body
   template: src=./templates/ingress_security_rules.yaml.j2 dest=/tmp/instance_ingress_security_rules.yaml
-- name: 송신 규칙 yml을 작성한다.
+- name: create egress yaml body
   template: src=./templates/egress_security_rules.yaml.j2 dest=/tmp/instance_egress_security_rules.yaml
-- name: 수신 규칙 yml에 정의된 변수를 불러온다.
+- name: load the variables defined in the ingress rules yaml body
   include_vars:
     file: /tmp/instance_ingress_security_rules.yaml
     name: loaded_ingress
 - name: print loaded_ingress
   debug:
     msg: "loaded ingress is {{loaded_ingress}}"
-- name: 송신 규칙 yml에 정의된 변수를 불러온다.
+- name: load the variables defined in the egress rules yaml body
   include_vars:
     file: /tmp/instance_egress_security_rules.yaml
     name: loaded_egress
 - name: print loaded_egress
   debug:
     msg: "loaded egress is {{loaded_egress}}"
-- name: 퍼블릭 인스턴스로 접속을 허용하는 보안 목록을 만든다.
+- name: Create a security list for allowing access to public instance
   oci_network_security_list:
     name: "{{ securitylist_name }}"
     compartment_id: "{{ instance_compartment }}"
@@ -93,7 +93,7 @@
 - set_fact:
     instance_security_list_ocid: "{{ result.security_list.id }}"
 
-- name: 퍼블릭 인스턴스를 호스트하는 서브넷 생성 ==> 보안 목록과 라우팅 테이블을 연결한다.
+- name: Create a subnet to host the public instance. Link security_list and route_table.
   oci_network_subnet:
     availability_domain: "{{ instance_ad }}"
     cidr_block: "{{ subnet_cidr }}"
