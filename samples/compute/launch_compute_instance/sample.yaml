@@ -10,6 +10,7 @@
   collections:
     - oracle.oci
   vars:
+    ansible_python_interpreter: /usr/bin/python3
     # common networking definitions
     quad_zero_route: "0.0.0.0/0"
     TCP_protocol: "6"
