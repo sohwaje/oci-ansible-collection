@@ -5,8 +5,8 @@
   - block:
       - import_tasks: setup.yaml
 
-    # - set_fact:
-    #     SSH_AUTHORIZED_KEYS: "{{ lookup('env', 'SAMPLE_PUBLIC_SSH_KEY') if 'SAMPLE_PUBLIC_SSH_KEY' in ansible_env else lookup('file',  my_test_public_key ) }}"
+    - set_fact:
+        SSH_AUTHORIZED_KEYS: "{{ lookup('env', 'SAMPLE_PUBLIC_SSH_KEY') if 'SAMPLE_PUBLIC_SSH_KEY' in ansible_env else lookup('file',  my_test_public_key ) }}"
 
     # - name: Launch an instance
     #   oci_compute_instance:
