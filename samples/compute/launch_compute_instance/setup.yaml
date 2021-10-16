@@ -10,9 +10,9 @@
     msg: "Environment variable {{item}} not set. Please declare an environment variable with an appropriate value for the sample to work."
   when: item not in ansible_env
   with_items:
-    - "SAMPLE_COMPARTMENT_OCID"
-    - "SAMPLE_IMAGE_OCID"
-    - "SAMPLE_AD_NAME"
+    - "ocid1.compartment.oc1..aaaaaaaacwjmgco76ooryxsynaqutmr2iexoc3vxd2rpwgxwyhd3prkuwarq"
+    - "ocid1.image.oc1.ap-seoul-1.aaaaaaaau6kj7kqdi35mubcngkupibeqfg7nwsnigypoimbkhcjzvlu2tn7a"
+    - "LqoE:AP-SEOUL-1-AD-1"
 - block:
   - name: Create a temporary directory to house a temporary SSH keypair we will later use to connect to instance
     tempfile:
