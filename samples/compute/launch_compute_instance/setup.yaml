@@ -82,5 +82,4 @@
     # - import_tasks: teardown.yaml
 
     rescue:
-
-      - import_tasks: teardown.yaml
+    - import_tasks: teardown.yaml
