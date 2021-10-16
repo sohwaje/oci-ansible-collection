@@ -4,25 +4,25 @@
     - oracle.oci
   tasks:
     - block:
-    #   - import_tasks: setup.yaml
+      - import_tasks: setup.yaml
 
-    #   - set_fact:
-    #       SSH_AUTHORIZED_KEYS: "{{ lookup('env', 'SAMPLE_PUBLIC_SSH_KEY') if 'SAMPLE_PUBLIC_SSH_KEY' in ansible_env else lookup('file',  my_test_public_key ) }}"
+      - set_fact:
+          SSH_AUTHORIZED_KEYS: "{{ lookup('env', 'SAMPLE_PUBLIC_SSH_KEY') if 'SAMPLE_PUBLIC_SSH_KEY' in ansible_env else lookup('file',  my_test_public_key ) }}"
 
-    #   - name: Launch an instance
-    #     oci_compute_instance:
-    #       availability_domain: "{{ instance_ad }}"
-    #       compartment_id: "{{ instance_compartment }}"
-    #       name: "my_test_instance"
-    #       image_id: "{{ instance_image }}"
-    #       shape: "{{ instance_shape }}"
-    #       create_vnic_details:
-    #           assign_public_ip: True
-    #           hostname_label: "{{ instance_hostname }}"
-    #           subnet_id: "{{ instance_subnet_id }}"
-    #       metadata:
-    #           ssh_authorized_keys: "{{ SSH_AUTHORIZED_KEYS }}"
-    #     register: result
+      - name: Launch an instance
+        oci_compute_instance:
+          availability_domain: "{{ instance_ad }}"
+          compartment_id: "{{ instance_compartment }}"
+          name: "my_test_instance"
+          image_id: "{{ instance_image }}"
+          shape: "{{ instance_shape }}"
+          create_vnic_details:
+              assign_public_ip: True
+              hostname_label: "{{ instance_hostname }}"
+              subnet_id: "{{ instance_subnet_id }}"
+          metadata:
+              ssh_authorized_keys: "{{ SSH_AUTHORIZED_KEYS }}"
+        register: result
 
     #   - name: Print instance details
     #     debug:
