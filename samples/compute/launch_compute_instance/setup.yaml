@@ -1,6 +1,6 @@
 ---
-- name: 인스턴스를 시작하고 SSH를 사용하여 연결
-  hosts: localhost
+# - name: 인스턴스를 시작하고 SSH를 사용하여 연결
+- hosts: localhost
   collections:
     - oracle.oci
   vars:
