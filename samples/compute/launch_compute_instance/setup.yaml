@@ -5,14 +5,14 @@
 # Apache License v2.0
 # See LICENSE.TXT for details.
 
-# - name: Check pre-requisites
-#   fail:
-#     msg: "Environment variable {{item}} not set. Please declare an environment variable with an appropriate value for the sample to work."
-#   when: item not in ansible_env
-#   with_items:
-#     - "SAMPLE_COMPARTMENT_OCID"
-#     - "SAMPLE_IMAGE_OCID"
-#     - "SAMPLE_AD_NAME"
+- name: Check pre-requisites
+  fail:
+    msg: "Environment variable {{item}} not set. Please declare an environment variable with an appropriate value for the sample to work."
+  when: item not in ansible_env
+  with_items:
+    - "SAMPLE_COMPARTMENT_OCID"
+    - "SAMPLE_IMAGE_OCID"
+    - "SAMPLE_AD_NAME"
 - block:
   - name: Create a temporary directory to house a temporary SSH keypair we will later use to connect to instance
     tempfile:
@@ -36,7 +36,7 @@
   when: "'SAMPLE_PUBLIC_SSH_KEY' not in ansible_env"
 
 - name: Create a VCN
-  oci_vcn:
+  oci_network_vcn:
     compartment_id: "{{ instance_compartment }}"
     display_name: "{{ vcn_name }}"
     cidr_block: "{{ vcn_cidr_block }}"
