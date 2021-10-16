@@ -3,7 +3,7 @@
   collections:
     - oracle.oci
   tasks:
-    # - block:
+    - block:
     #   - import_tasks: setup.yaml
 
     #   - set_fact:
