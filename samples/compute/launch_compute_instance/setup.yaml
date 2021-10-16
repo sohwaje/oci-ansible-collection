@@ -2,7 +2,8 @@
   collections:
     - oracle.oci
   tasks:
-  - block:
+    - name: Launch an instance ==> Print instance detail ==>
+      block:
       - import_tasks: setup.yaml
 
     - set_fact:
@@ -81,5 +82,5 @@
 
     # - import_tasks: teardown.yaml
 
-  - rescue:
-    - import_tasks: teardown.yaml
+  # - rescue:
+  #   - import_tasks: teardown.yaml
