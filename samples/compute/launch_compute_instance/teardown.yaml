@@ -5,32 +5,32 @@
 # Apache License v2.0
 # See LICENSE.TXT for details.
 
-- name: Terminate the instance
+- name: 인스턴스를 종료한다.
   oci_compute_instance:
     id: "{{ instance_id }}"
     state: absent
 
-- name: Delete the subnet
+- name: 서브넷을 삭제한다.
   oci_network_subnet:
     id: "{{ instance_subnet_id }}"
     state: absent
 
-- name: Delete the security list
+- name: 보안 목록을 삭제한다.
   oci_network_security_list:
     id: "{{ instance_security_list_ocid }}"
     state: absent
 
-- name: Delete the route table
+- name: 라우팅 테이블을 삭제한다.
   oci_network_route_table:
     id: "{{ rt_id }}"
     state: absent
 
-- name: Delete the Internet Gateway
+- name: 인터넷 게이트웨이를 삭제한다.
   oci_network_internet_gateway:
     id: "{{ ig_id }}"
     state: absent
 
-- name: Delete the VCN
+- name: VCN을 삭제한다.
   oci_network_vcn:
     vcn_id: "{{ vcn_id }}"
     state: absent
