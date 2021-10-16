@@ -58,7 +58,7 @@
     ig_id: "{{ result.internet_gateway.id }}"
 
 - name: Create route table to connect internet gateway to the VCN
-  oci_route_table:
+  oci_network_route_table:
     compartment_id: "{{ instance_compartment }}"
     vcn_id: "{{ vcn_id }}"
     name: "{{ route_table_name }}"
@@ -91,7 +91,7 @@
   debug:
     msg: "loaded egress is {{loaded_egress}}"
 - name: Create a security list for allowing access to public instance
-  oci_security_list:
+  oci_network_security_list:
     name: "{{ securitylist_name }}"
     compartment_id: "{{ instance_compartment }}"
     vcn_id: '{{ vcn_id }}'
@@ -102,7 +102,7 @@
     instance_security_list_ocid: "{{ result.security_list.id }}"
 
 - name: Create a subnet to host the public instance. Link security_list and route_table.
-  oci_subnet:
+  oci_network_subnet:
     availability_domain: "{{ instance_ad }}"
     cidr_block: "{{ subnet_cidr }}"
     compartment_id: "{{ instance_compartment }}"
