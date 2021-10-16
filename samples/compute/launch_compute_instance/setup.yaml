@@ -5,8 +5,8 @@
 # Apache License v2.0
 # See LICENSE.TXT for details.
 
-- name: Launch a compute instance and connect to it using SSH
-  hosts: localhost
+# - name: Launch a compute instance and connect to it using SSH
+- hosts: localhost
   collections:
     - oracle.oci
 
