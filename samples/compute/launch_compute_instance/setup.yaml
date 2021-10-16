@@ -47,7 +47,7 @@
     vcn_id: "{{ result.vcn.id }}"
 
 - name: Create a new Internet Gateway
-  oci_network_internet_gateway:
+  oci_internet_gateway:
     compartment_id: "{{ instance_compartment }}"
     vcn_id: "{{ vcn_id }}"
     name: "{{ ig_name }}"
