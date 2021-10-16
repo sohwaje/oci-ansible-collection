@@ -18,10 +18,10 @@
 
       - name: Launch an instance
         oci_compute_instance:
-          availability_domain: "{{ SAMPLE_AD_NAME }}"
-          compartment_id: "{{ SAMPLE_COMPARTMENT_OCID }}"
+          availability_domain: "{{ instance_ad }}"
+          compartment_id: "{{ instance_compartment }}"
           name: "my_test_instance"
-          image_id: "{{ SAMPLE_IMAGE_OCID }}"
+          image_id: "{{ instance_image }}"
           shape: "{{ instance_shape }}"
           create_vnic_details:
               assign_public_ip: True
