@@ -40,6 +40,15 @@
 - set_fact:
     vcn_id: "{{ result.vcn.id }}"
 
+#==========================================================================================
+- name: Create a new NAT Gateway
+  oci_network_nat_gateway:
+    compartment_id: "{{ instance_compartment }}"
+    vcn_id: "{{ vcn_id }}"
+    name: "{{ ng_name }}"
+  register: result
+- set_fact:
+    ng_id: "{{ result.nat_gateway.id }}"
 #########################################
 # Private subnet
 #########################################
@@ -67,7 +76,6 @@
   register: result
 - set_fact:
     private_subnet_security_list_ocid: "{{ result.security_list.id }}"
-
 #==========================================================================================
 
 - name: Create a route table to connect all access from the private subnet to the NAT Gateway

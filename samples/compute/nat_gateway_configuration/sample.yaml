@@ -27,8 +27,8 @@
 
     private_subnet_securitylist_name: "SSH to Server"
 
-    private_subnet_route_table_name: "Default Route Table for vcn01"
-    # route all internet access from the private subnet to the NAT Gateway
+    private_subnet_route_table_name: "ngw route table"
+    #  프라이빗 서브넷에서 NAT 게이트웨이로 모든 인터넷 접근이 라우트된다.
     private_subnet_route_table_rules:
         - cidr_block: "{{ quad_zero_route }}"
           network_entity_id: "{{ ng_id }}"
