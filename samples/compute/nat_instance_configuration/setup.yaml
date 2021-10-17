@@ -46,13 +46,13 @@
   register: result
 - set_fact:
     vcn_id: "{{ result.vcn.id }}"
-
+#==========================================================================================
 - name: 서브넷에 프라이빗 IP 나열
   oci_network_private_ip_facts:
     subnet_id: "{{ private_subnet_id }}"
   register: result
 
-- name: Get OCID of primary private IP of the instance
+- name: 인스턴스의 프라이머리 프라이빗 IP의 OCID를 가져온다
   set_fact:
     private_ip_id_of_nat_instance: "{{ item.id }}"
   with_items: "{{ result.private_ips }}"

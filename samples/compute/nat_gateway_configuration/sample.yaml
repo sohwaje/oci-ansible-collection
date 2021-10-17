@@ -15,39 +15,27 @@
     TCP_protocol: "6"
     SSH_port: "22"
 
-    vcn_name: "ansible-sample-nat-gateway-config-vcn"
+    vcn_name: "vcn01"
     vcn_cidr_block: "10.0.0.0/16"
 
-    ng_name: "ansible-sample-nat-gateway-config-ng"
-    ig_name: "ansible-sample-nat-gateway-config-ig"
+    ng_name: "natgw01"
 
     private_subnet_cidr: "10.0.1.0/24"
-    public_subnet_cidr: "10.0.0.0/24"
 
-    private_subnet_name: "ansible-sample-nat-gateway-config-privatesubnet"
-    public_subnet_name: "ansible-sample-nat-gateway-config-publicsubnet"
+    private_subnet_name: "private subnet01"
 
-    public_subnet_securitylist_name: "ansible-sample-nat-gateway-config-publicssl"
-    private_subnet_securitylist_name: "ansible-sample-nat-gateway-config-privatessl"
+    private_subnet_securitylist_name: "SSH to Server"
 
-    public_subnet_route_table_name: "ansible-sample-nat-gateway-config-publicsubnet"
-    # route all internet access from the public subnet to the Internet Gateway
-    public_subnet_route_table_rules:
-        - cidr_block: "{{ quad_zero_route }}"
-          network_entity_id: "{{ ig_id }}"
-
-    private_subnet_route_table_name: "ansible-sample-nat-gateway-config-privatesubnet"
+    private_subnet_route_table_name: "ngw route table"
     # route all internet access from the private subnet to the NAT Gateway
     private_subnet_route_table_rules:
         - cidr_block: "{{ quad_zero_route }}"
           network_entity_id: "{{ ng_id }}"
 
-    public_subnet_instance_name: "ansible-sample-nat-gateway-config-publicinstance"
-    private_subnet_instance_name: "ansible-sample-nat-gateway-config-privateinstance"
+    private_subnet_instance_name: "privateinstance01"
 
-    instance_shape: "{{ lookup('env', 'SAMPLE_INSTANCE_SHAPE') | default('VM.Standard2.1', true) }}"
-    public_subnet_instance_hostname: "mypublicinstance"
-    private_subnet_instance_hostname: "myprivateinstance"
+    instance_shape: "{{ lookup('env', 'SAMPLE_INSTANCE_SHAPE') | default('VM.Standard.E2.1', true) }}"
+    private_subnet_instance_hostname: "privateinstance01"
 
     # Use "opc" as the user, as this is an OL image
     ssh_user: "opc"
@@ -59,57 +47,56 @@
     # *Note* - Override the following variables based on your tenancy
     # or set a valid value for the corresponding environment variable
     #########################################
-    instance_ad: "{{ lookup('env', 'SAMPLE_AD_NAME') }}"
-    instance_compartment: "{{ lookup('env', 'SAMPLE_COMPARTMENT_OCID') }}"
-    # provide an OL image
-    instance_image: "{{ lookup('env', 'SAMPLE_OL_IMAGE_OCID') }}"
+    instance_ad: "instance_ad"
+    instance_compartment: "instance_compartment"
+    instance_image: "instance_image"
 
   tasks:
     - block:
       - import_tasks: setup.yaml
 
-      #==========================================================================================
+      # #==========================================================================================
 
-      - name: Wait (upto 10 minutes) for ssh to start in public instance
-        wait_for:
-          port: 22
-          host: '{{ public_instance_public_ip }}'
-          state: started
-          delay: 10
-          timeout: 600
-        vars:
-          ansible_connection: local
+      # - name: Wait (upto 10 minutes) for ssh to start in public instance
+      #   wait_for:
+      #     port: 22
+      #     host: '{{ public_instance_public_ip }}'
+      #     state: started
+      #     delay: 10
+      #     timeout: 600
+      #   vars:
+      #     ansible_connection: local
 
-      #==========================================================================================
+      # #==========================================================================================
 
-      - name: Wait (upto 5 minutes) for ssh to start in private instance
-        command: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} uname -a'
-        register: result
-        until: result.rc == 0
-        retries: 10
-        delay: 30
+      # - name: Wait (upto 5 minutes) for ssh to start in private instance
+      #   command: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} uname -a'
+      #   register: result
+      #   until: result.rc == 0
+      #   retries: 10
+      #   delay: 30
 
-      - name: Print sample SSH invocation to test if internet access is available in the private instance
-        debug:
-          msg: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} ping -c2 oracle.com'
+      # - name: Print sample SSH invocation to test if internet access is available in the private instance
+      #   debug:
+      #     msg: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} ping -c2 oracle.com'
 
-      #==========================================================================================
+      # #==========================================================================================
 
-      - name: Check internet access from private instance
-        command: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} ping -c2 oracle.com'
-        register: result
+      # - name: Check internet access from private instance
+      #   command: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} ping -c2 oracle.com'
+      #   register: result
 
-      - name: Print ping response from the private instance
-        debug:
-          msg: "{{ result.stdout_lines }}"
+      # - name: Print ping response from the private instance
+      #   debug:
+      #     msg: "{{ result.stdout_lines }}"
 
-      #==========================================================================================
+      # #==========================================================================================
 
-      - import_tasks: teardown.yaml
+      # - import_tasks: teardown.yaml
 
-      rescue:
-        - import_tasks: teardown.yaml
-          ignore_errors: yes
+      # rescue:
+      #   - import_tasks: teardown.yaml
+      #     ignore_errors: yes
 
-        - fail:
-            msg: "{{ ansible_failed_result }}"
+      #   - fail:
+      #       msg: "{{ ansible_failed_result }}"
