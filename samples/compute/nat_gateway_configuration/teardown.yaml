@@ -10,7 +10,7 @@
     state: absent
     path: "{{ temp_certificates_path }}"
 
-- name: Terminate instances
+- name: 인스턴스 종료
   oci_compute_instance:
     id: "{{ item  }}"
     state: absent
@@ -18,7 +18,7 @@
     - "{{ private_subnet_instance_id }}"
     - "{{ public_subnet_instance_id }}"
 
-- name: Delete the subnets
+- name: 서브넷 삭제
   oci_network_subnet:
     id: "{{ item }}"
     state: absent
@@ -26,7 +26,7 @@
     - "{{ private_subnet_id }}"
     - "{{ public_subnet_id }}"
 
-- name: Delete the security lists
+- name: 보안 목록 삭제
   oci_network_security_list:
     id: "{{ item }}"
     state: absent
@@ -34,7 +34,7 @@
     - "{{ private_subnet_security_list_ocid }}"
     - "{{ public_subnet_security_list_ocid }}"
 
-- name: Delete the route tables
+- name: 라우트 테이블 삭제
   oci_network_route_table:
     id: "{{ item }}"
     state: absent
@@ -42,17 +42,17 @@
     - "{{ private_subnet_rt_id }}"
     - "{{ public_subnet_rt_id }}"
 
-- name: Delete the Internet Gateway
+- name: 인터넷 게이트웨이 삭제
   oci_network_internet_gateway:
     id: "{{ ig_id }}"
     state: absent
 
-- name: Delete the NAT Gateway
+- name: NAT 게이트웨이 삭제
   oci_network_nat_gateway:
     id: "{{ ng_id }}"
     state: absent
 
-- name: Delete the VCN
-  oci_network_vcn:
-    vcn_id: "{{ vcn_id }}"
-    state: absent
+# - name: Delete the VCN
+#   oci_network_vcn:
+#     vcn_id: "{{ vcn_id }}"
+#     state: absent
