@@ -47,6 +47,11 @@
 - set_fact:
     vcn_id: "{{ result.vcn.id }}"
 
+- name: List private IPs in the subnet
+  oci_network_private_ip_facts:
+    subnet_id: "{{ private_subnet_id }}"
+  register: result
+
 - name: Get OCID of primary private IP of the instance
   set_fact:
     private_ip_id_of_nat_instance: "{{ item.id }}"
