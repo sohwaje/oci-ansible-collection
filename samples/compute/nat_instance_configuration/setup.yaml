@@ -47,7 +47,7 @@
 - set_fact:
     vcn_id: "{{ result.vcn.id }}"
 
-- name: List private IPs in the subnet
+- name: 서브넷에 프라이빗 IP 나열
   oci_network_private_ip_facts:
     subnet_id: "{{ private_subnet_id }}"
   register: result
