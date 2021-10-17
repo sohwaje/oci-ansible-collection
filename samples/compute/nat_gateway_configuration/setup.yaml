@@ -15,7 +15,7 @@
 - set_fact:
     temp_certificates_path: "{{ result.path }}"
 
-- name: Generate a Private Key
+- name: 프라이빗 키 생성
   openssl_privatekey:
     path: "{{ temp_certificates_path }}/private_key.pem"
     type: RSA
@@ -23,15 +23,14 @@
 - set_fact:
     my_test_public_key: "{{ temp_certificates_path }}/public_key.pem"
 
-- name: Generate a Public Key
+- name: 퍼블릭 키 생성
   openssl_publickey:
     path: "{{ my_test_public_key }}"
     privatekey_path: "{{ temp_certificates_path }}/private_key.pem"
     format: OpenSSH
 
 #==========================================================================================
-
-- name: Create a VCN
+- name: VCN 만들기
   oci_network_vcn:
     compartment_id: "{{ instance_compartment }}"
     display_name: "{{ vcn_name }}"
@@ -41,7 +40,7 @@
     vcn_id: "{{ result.vcn.id }}"
 
 #==========================================================================================
-- name: Create a new NAT Gateway
+- name: NAT Gateway 만들기
   oci_network_nat_gateway:
     compartment_id: "{{ instance_compartment }}"
     vcn_id: "{{ vcn_id }}"
@@ -49,20 +48,20 @@
   register: result
 - set_fact:
     ng_id: "{{ result.nat_gateway.id }}"
+
 #########################################
 # Private subnet
 #########################################
-
 #==========================================================================================
 
-# Create a security list for the private subnet
-- name: Create a security list for the private subnet
+# 프라이빗 서브넷을 위한 보안 목록 생성
+- name: 프라이빗 서브넷을 위한 보안 목록 생성
   oci_network_security_list:
     name: "{{ private_subnet_securitylist_name }}"
     compartment_id: "{{ instance_compartment }}"
     vcn_id: '{{ vcn_id }}'
     ingress_security_rules:
-      # Allow incoming SSH connections
+      # SSH 연결 허용
       - source: "{{ public_subnet_cidr }}"
         protocol: "{{ TCP_protocol }}"
         tcp_options:
@@ -78,7 +77,7 @@
     private_subnet_security_list_ocid: "{{ result.security_list.id }}"
 #==========================================================================================
 
-- name: Create a route table to connect all access from the private subnet to the NAT Gateway
+- name: 프라이빗 서브넷에서 NAT Gateway로 접근하기 위한 라우트 테이블 생성
   oci_network_route_table:
     compartment_id: "{{ instance_compartment }}"
     vcn_id: "{{ vcn_id }}"
@@ -90,13 +89,13 @@
 
 #==========================================================================================
 
-- name: Create the private subnet to host the private instance. Link security_list and route_table.
+- name: 프라이빗 인스턴스를 호스트하는 프라이빗 서브넷 생성. 보안 목록과 라우트 테이블을 링크한다.
   oci_network_subnet:
     availability_domain: "{{ instance_ad }}"
     cidr_block: "{{ private_subnet_cidr }}"
     compartment_id: "{{ instance_compartment }}"
     display_name: "{{ private_subnet_name }}"
-    prohibit_public_ip_on_vnic: True
+    prohibit_public_ip_on_vnic: false
     route_table_id: "{{ private_subnet_rt_id }}"
     security_list_ids: [ "{{ private_subnet_security_list_ocid }}" ]
     vcn_id: '{{ vcn_id }}'
