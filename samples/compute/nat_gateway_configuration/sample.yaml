@@ -16,11 +16,11 @@
     SSH_port: "22"
 
     vcn_name: "vcn01"
-    vcn_cidr_block: "10.0.3.0/16"
+    vcn_cidr_block: "10.0.0.0/16"
 
     ng_name: "natgw01"
 
-    private_subnet_cidr: "10.0.1.0/24"
+    private_subnet_cidr: "10.0.3.0/24"
     public_subnet_cidr: "10.0.0.0/24"
 
     private_subnet_name: "private subnet03"
