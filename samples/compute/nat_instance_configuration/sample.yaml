@@ -5,47 +5,33 @@
 # Apache License v2.0
 # See LICENSE.TXT for details.
 
-- name: Launch a compute instance and connect to it using SSH
+- name: 인스턴스를 생성하고 SSH를 사용하여 연결한다.
   hosts: localhost
   collections:
     - oracle.oci
   vars:
-    # common networking definitions
+    ansible_python_interpreter: /usr/bin/python3
     quad_zero_route: "0.0.0.0/0"
     TCP_protocol: "6"
     SSH_port: "22"
 
-    vcn_name: "ansible-sample-nat-instance-config-vcn"
+    vcn_name: "vcn01"
     vcn_cidr_block: "10.0.0.0/16"
 
-    ig_name: "ansible-sample-nat-instance-config-ig"
-
     private_subnet_cidr: "10.0.1.0/24"
-    public_subnet_cidr: "10.0.0.0/24"
-
-    private_subnet_name: "ansible-sample-nat-instance-config-privatesubnet"
-    public_subnet_name: "ansible-sample-nat-instance-config-publicsubnet"
-
-    public_subnet_securitylist_name: "ansible-sample-nat-instance-config-publicssl"
-    private_subnet_securitylist_name: "ansible-sample-nat-instance-config-privatesl"
-
-    public_subnet_route_table_name: "ansible-sample-nat-instance-config-rtforpublicssl"
+    private_subnet_name: "private subnet01"
+    private_subnet_securitylist_name: "SSH to Server"
     # route all internet access from the public subnet to the Internet Gateway
-    public_subnet_route_table_rules:
-        - cidr_block: "{{ quad_zero_route }}"
-          network_entity_id: "{{ ig_id }}"
 
-    private_subnet_route_table_name: "ansible-sample-nat-instance-config-rtforprivatessl"
+    private_subnet_route_table_name: "ngw route table"
     # route all internet access from the private subnet to the Private IP of the NAT instance
     private_subnet_route_table_rules:
         - cidr_block: "{{ quad_zero_route }}"
           network_entity_id: "{{ private_ip_id_of_nat_instance }}"
 
-    public_subnet_instance_name: "ansible-sample-nat-instance-config-public-instance"
     private_subnet_instance_name: "ansible-sample-nat-instance-config-private-instance"
 
-    instance_shape: "{{ lookup('env', 'SAMPLE_INSTANCE_SHAPE') | default('VM.Standard2.1', true) }}"
-    public_subnet_instance_hostname: "samplepublicsubnet"
+    instance_shape: "{{ lookup('env', 'SAMPLE_INSTANCE_SHAPE') | default('VM.Standard.E2.1', true) }}"
     private_subnet_instance_hostname: "sampleprivatesubnet"
 
     # Use "opc" as the user, as this is an OL image
@@ -54,14 +40,11 @@
     ssh_credentials_arg: "-i {{ temp_certificates_path }}/private_key.pem"
 
     #########################################
-    # Tenancy specific configuration
-    # *Note* - Override the following variables based on your tenancy
-    # or set a valid value for the corresponding environment variable
+    # 가용성 도메인, 구획, 이미지ID를 변수로 지정한다.
     #########################################
-    instance_ad: "{{ lookup('env', 'SAMPLE_AD_NAME') }}"
-    instance_compartment: "{{ lookup('env', 'SAMPLE_COMPARTMENT_OCID') }}"
-    # provide an OL image
-    instance_image: "{{ lookup('env', 'SAMPLE_IMAGE_OCID') }}"
+    instance_ad: "instance_ad"
+    instance_compartment: "instance_compartment"
+    instance_image: "instance_image"
 
   tasks:
     - block:
@@ -69,10 +52,10 @@
 
       #==========================================================================================
 
-      - name: Wait (upto 10 minutes) for port 22 to become open
+      - name: 포트 22번이 열릴 때까지 대기
         wait_for:
           port: 22
-          host: '{{ public_instance_public_ip }}'
+          host: '{{ private_instance_private_ip }}'
           state: started
           delay: 10
           timeout: 600
@@ -82,7 +65,7 @@
       #==========================================================================================
 
       - name: Connect to the public instance to show that ip forwarding is enabled on the NAT instance.
-        command: ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} {{ ssh_user }}@{{ public_instance_public_ip }} cat /etc/sysctl.d/98-ip-forward.conf
+        command: ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} {{ ssh_user }}@{{ private_instance_private_ip }} cat /etc/sysctl.d/98-ip-forward.conf
         register: result
       - name: Print SSH response from launched instance
         debug:
@@ -91,7 +74,7 @@
       #==========================================================================================
 
       - name: Wait (upto 5 minutes) for ssh to start in private instance
-        command: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} uname -a'
+        command: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ private_instance_private_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} uname -a'
         register: result
         until: result.rc == 0
         retries: 10
@@ -101,10 +84,10 @@
 
       - name: Print sample SSH invocation to test if internet access is available in the private instance
         debug:
-          msg: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} ping -c2 oracle.com'
+          msg: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ private_instance_private_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} ping -c2 oracle.com'
 
       - name: Print sample SSH invocation to test if internet access is available in the private instance
-        command: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} ping -c2 oracle.com'
+        command: 'ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }} -W %h:%p -q {{ ssh_user }}@{{ private_instance_private_ip }}" {{ ssh_user }}@{{ private_instance_private_ip }} ping -c2 oracle.com'
         register: result
 
       - name: Print ping response from the private instance
@@ -117,7 +100,7 @@
   #    - name: Add private instance to group
   #      add_host:
   #        name: "{{ private_instance_private_ip }}"
-  #        ansible_ssh_common_args: '-o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} -W %h:%p -q {{ ssh_credentials_arg }} {{ ssh_user }}@{{ public_instance_public_ip }}" {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }}'
+  #        ansible_ssh_common_args: '-o ProxyCommand="ssh {{ ssh_disable_strict_host_key_checking_args }} -W %h:%p -q {{ ssh_credentials_arg }} {{ ssh_user }}@{{ private_instance_private_ip }}" {{ ssh_disable_strict_host_key_checking_args }} {{ ssh_credentials_arg }}'
   #        groups: private_servers
   # - name: Run a command in the remote server
   #  hosts: private_servers
@@ -127,11 +110,11 @@
 
       #==========================================================================================
 
-      - import_tasks: teardown.yaml
+      # - import_tasks: teardown.yaml
 
-      rescue:
-        - import_tasks: teardown.yaml
-          ignore_errors: yes
+      # rescue:
+      #   - import_tasks: teardown.yaml
+      #     ignore_errors: yes
 
-        - fail:
-            msg: "{{ ansible_failed_result }}"
+      #   - fail:
+      #       msg: "{{ ansible_failed_result }}"
