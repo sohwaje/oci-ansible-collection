@@ -47,6 +47,12 @@
 - set_fact:
     vcn_id: "{{ result.vcn.id }}"
 
+- name: Get OCID of primary private IP of the instance
+  set_fact:
+    private_ip_id_of_nat_instance: "{{ item.id }}"
+  with_items: "{{ result.private_ips }}"
+  when: item.vnic_id == vnic_info.vnic_attachments[0].vnic_id
+
 #==========================================================================================
 
 #########################################
