@@ -27,7 +27,7 @@
 
     private_subnet_securitylist_name: "SSH to Server"
 
-    private_subnet_route_table_name: "ngw route table"
+    private_subnet_route_table_name: "Default Route Table for vcn01"
     # route all internet access from the private subnet to the NAT Gateway
     private_subnet_route_table_rules:
         - cidr_block: "{{ quad_zero_route }}"
