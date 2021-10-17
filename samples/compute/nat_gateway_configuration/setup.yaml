@@ -7,7 +7,7 @@
 
 #==========================================================================================
 
-- name: Create a temporary directory to house a temporary SSH keypair we will later use to connect to instance
+- name: 인스턴스에 연결하는 데 사용할 임시 SSH 키 쌍을 저장할 임시 디렉토리 만들기
   tempfile:
     state: directory
     suffix: cert
@@ -105,7 +105,7 @@
 
 #==========================================================================================
 
-- name: Launch an instance in the private subnet from which internet access would go through the NAT Gateway
+- name: NAT 게이트웨이를 통해 인터넷에 엑세스 하는 서브넷에 인스턴스를 생성한다.
   oci_compute_instance:
     availability_domain: "{{ instance_ad }}"
     compartment_id: "{{ instance_compartment }}"
@@ -123,19 +123,19 @@
 
 #==========================================================================================
 
-- name: Get the VNIC attachment details of instance
+- name: 인스턴스의 VNCI 부착물의 세부 정보를 가져온다.
   oci_compute_vnic_attachment_facts:
     compartment_id: "{{ instance_compartment }}"
     instance_id: "{{ private_subnet_instance_id }}"
   register: result
 
-- name: Get details of the VNIC
+- name: VNIC의 세부 정보를 가져온다.
   oci_network_vnic_facts:
     id: "{{ result.vnic_attachments[0].vnic_id }}"
   register: result
 - set_fact:
     private_instance_private_ip: "{{result.vnic.private_ip}}"
 
-- name: Print the private ip of the newly launched instance
+- name: 인스턴스의 프라이빗 IP를 출력한다
   debug:
-    msg: "Private IP of the instance launched in the private subnet {{ private_instance_private_ip }}"
+    msg: "프라이빗 서브넷에 생성된 인스턴스의 프라이빗 IP는 {{ private_instance_private_ip }}입니다."
