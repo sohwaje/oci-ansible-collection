@@ -93,11 +93,12 @@
 
       # #==========================================================================================
 
-      # - import_tasks: teardown.yaml
+      # 리소스 삭제 플레이북
+      - import_tasks: teardown.yaml
 
-      # rescue:
-      #   - import_tasks: teardown.yaml
-      #     ignore_errors: yes
+      rescue:
+        - import_tasks: teardown.yaml
+          ignore_errors: yes
 
-      #   - fail:
-      #       msg: "{{ ansible_failed_result }}"
+        - fail:
+            msg: "{{ ansible_failed_result }}"
