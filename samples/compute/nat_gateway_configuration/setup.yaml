@@ -109,7 +109,7 @@
   oci_compute_instance:
     availability_domain: "{{ instance_ad }}"
     compartment_id: "{{ instance_compartment }}"
-    name: "{{ private_subnet_instance_name }}"
+    name: "{{ private_subnet_instance_name }}_{{ item }}"
     image_id: "{{ instance_image }}"
     shape: "{{ instance_shape }}"
     create_vnic_details:
@@ -120,6 +120,8 @@
   register: result
 - set_fact:
     private_subnet_instance_id: "{{ result.instance.id }}"
+  loop:
+    - 1
 
 #==========================================================================================
 

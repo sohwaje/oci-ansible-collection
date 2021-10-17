@@ -20,10 +20,10 @@
 
     ng_name: "natgw01"
 
-    private_subnet_cidr: "10.0.3.0/24"
+    private_subnet_cidr: "10.0.2.0/24"
     public_subnet_cidr: "10.0.0.0/24"
 
-    private_subnet_name: "private subnet03"
+    private_subnet_name: "private subnet02"
 
     private_subnet_securitylist_name: "SSH to Server"
 
@@ -33,12 +33,12 @@
         - cidr_block: "{{ quad_zero_route }}"
           network_entity_id: "{{ ng_id }}"
 
-    private_subnet_instance_name: "privateinstance02"
+    private_subnet_instance_name: "privatedb"
 
     instance_shape: "{{ lookup('env', 'SAMPLE_INSTANCE_SHAPE') | default('VM.Standard.E2.1', true) }}"
-    private_subnet_instance_hostname: "privateinstance02"
+    private_subnet_instance_hostname: "privatedb"
 
-    # Use "opc" as the user, as this is an OL image
+    # 사용자 계정명 "opc"
     ssh_user: "opc"
     ssh_disable_strict_host_key_checking_args: '-o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no"'
     ssh_credentials_arg: "-i {{ temp_certificates_path }}/private_key.pem"
@@ -94,11 +94,11 @@
       # #==========================================================================================
 
       # 리소스 삭제 플레이북
-      - import_tasks: teardown.yaml
+      # - import_tasks: teardown.yaml
 
-      rescue:
-        - import_tasks: teardown.yaml
-          ignore_errors: yes
+      # rescue:
+      #   - import_tasks: teardown.yaml
+      #     ignore_errors: yes
 
         - fail:
             msg: "{{ ansible_failed_result }}"
