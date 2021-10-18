@@ -121,9 +121,11 @@
   loop:
     - 1
     - 2
+- debug:
+    msg: "{{ result }}"
 - set_fact:
-    private_subnet_instance_id1: "{{ result.instance.id[1] }}"
-    private_subnet_instance_id2: "{{ result.instance.id[2] }}"
+    private_subnet_instance_id: "{{ result.results[0].instance.id }}"
+    private_subnet_instance_id: "{{ result.results[0].instance.id }}"
 
 
 #==========================================================================================
