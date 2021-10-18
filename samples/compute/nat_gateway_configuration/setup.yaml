@@ -91,7 +91,7 @@
 
 - name: 프라이빗 인스턴스를 호스트하는 프라이빗 서브넷 생성. 보안 목록과 라우트 테이블을 링크한다.
   oci_network_subnet:
-    # availability_domain: "{{ instance_ad }}"
+    availability_domain: "{{ instance_ad }}"
     cidr_block: "{{ private_subnet_cidr }}"
     compartment_id: "{{ instance_compartment }}"
     display_name: "{{ private_subnet_name }}"
@@ -107,7 +107,7 @@
 
 - name: NAT 게이트웨이를 통해 인터넷에 엑세스 하는 서브넷에 인스턴스를 생성한다.
   oci_compute_instance:
-    # availability_domain: "{{ instance_ad }}"
+    availability_domain: "{{ instance_ad }}"
     compartment_id: "{{ instance_compartment }}"
     name: "{{ private_subnet_instance_name }}_{{ item }}"
     image_id: "{{ instance_image }}"
