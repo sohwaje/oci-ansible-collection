@@ -125,7 +125,7 @@
     msg: "{{ result }}"
 - set_fact:
     private_subnet_instance_id: "{{ result.results[0].instance.id }}"
-    private_subnet_instance_id: "{{ result.results[0].instance.id }}"
+    private_subnet_instance_id: "{{ result.results[1].instance.id }}"
 
 
 #==========================================================================================
