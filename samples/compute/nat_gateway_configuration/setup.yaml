@@ -118,10 +118,11 @@
     metadata:
         ssh_authorized_keys: "{{ lookup('file',  my_test_public_key ) }}"
   register: result
-- set_fact:
-    private_subnet_instance_id: "{{ result.instance.id }}"
   loop:
     - 1
+    - 2
+- set_fact:
+    private_subnet_instance_id: "{{ result.instance.id }}"
 
 #==========================================================================================
 
