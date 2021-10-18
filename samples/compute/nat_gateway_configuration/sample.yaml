@@ -48,7 +48,7 @@
     # *Note* - Override the following variables based on your tenancy
     # or set a valid value for the corresponding environment variable
     #########################################
-    instance_ad: "" 
+    instance_ad: "instance_ad" 
     instance_compartment: "instance_compartment"
     instance_image: "instance_image"
 
