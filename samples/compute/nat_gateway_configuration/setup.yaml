@@ -122,7 +122,7 @@
     - 1
     - 2
 - set_fact:
-    private_subnet_instance_id: "{{ result.instance.id }}"
+    private_subnet_instance_id: "{{ result.instance.id }}_{{ item }}"
 
 #==========================================================================================
 
