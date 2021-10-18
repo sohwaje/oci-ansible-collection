@@ -100,5 +100,5 @@
       #   - import_tasks: teardown.yaml
       #     ignore_errors: yes
 
-        - fail:
-            msg: "{{ ansible_failed_result }}"
+        # - fail:
+        #     msg: "{{ ansible_failed_result }}"
