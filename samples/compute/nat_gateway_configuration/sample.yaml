@@ -20,10 +20,10 @@
 
     ng_name: "natgw01"
 
-    private_subnet_cidr: "10.0.2.0/24"
+    private_subnet_cidr: "10.0.3.0/24"
     public_subnet_cidr: "10.0.0.0/24"
 
-    private_subnet_name: "private subnet02"
+    private_subnet_name: "private subnet03"
 
     private_subnet_securitylist_name: "SSH to Server"
 
